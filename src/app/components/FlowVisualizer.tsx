@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, Network, Server, X } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 interface FlowVisualizerProps {
   activeFlow: 'public' | 'internal' | null;
@@ -7,6 +8,7 @@ interface FlowVisualizerProps {
 }
 
 export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
+  const { t } = useLanguage();
   return (
     <AnimatePresence>
       {activeFlow && (
@@ -28,7 +30,7 @@ export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
             <button
               onClick={onClose}
               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-all group"
-              aria-label="Fermer"
+              aria-label={t('closeButton')}
             >
               <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             </button>
@@ -46,13 +48,14 @@ export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
 }
 
 function PublicFlow() {
+  const { t } = useLanguage();
   return (
     <div className="space-y-8">
       <h2 className="text-2xl text-center text-red-300 flex items-center justify-center gap-3">
         <Shield className="w-7 h-7" />
-        Flux Public: Internet → Traefik Local 2
+        {t('publicFlowTitle')}
       </h2>
-      
+
       <div className="flex items-center justify-between">
         {/* Step 1 */}
         <motion.div
@@ -64,8 +67,8 @@ function PublicFlow() {
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-2xl">
             <span className="text-3xl">🌐</span>
           </div>
-          <p className="text-sm text-white mt-3">Internet</p>
-          <p className="text-xs text-slate-400">Utilisateur Public</p>
+          <p className="text-sm text-white mt-3">{t('internet')}</p>
+          <p className="text-xs text-slate-400">{t('publicUserLabel')}</p>
         </motion.div>
 
         {/* Arrow 1 */}
@@ -95,7 +98,7 @@ function PublicFlow() {
             <Shield className="w-12 h-12 text-white" />
           </div>
           <p className="text-sm text-white mt-3">WAF Edge B</p>
-          <p className="text-xs text-slate-400">Filtrage sécurisé</p>
+          <p className="text-xs text-slate-400">{t('secureFiltering')}</p>
         </motion.div>
 
         {/* Arrow 2 */}
@@ -125,7 +128,7 @@ function PublicFlow() {
             <Network className="w-12 h-12 text-white" />
           </div>
           <p className="text-sm text-white mt-3">Traefik Local 2</p>
-          <p className="text-xs text-slate-400">Serveur 2 (Sidecar)</p>
+          <p className="text-xs text-slate-400">{t('server2Sidecar')}</p>
         </motion.div>
       </div>
 
@@ -135,23 +138,21 @@ function PublicFlow() {
         transition={{ delay: 1.8 }}
         className="p-4 bg-red-950/40 border border-red-500/50 rounded-xl text-center"
       >
-        <p className="text-sm text-red-200">
-          ⚡ <strong>Chemin Direct:</strong> Ce flux contourne complètement le Traefik Central et l'authentification.<br/>
-          Les WAF filtrent les attaques et routent directement vers les services publics.
-        </p>
+        <p className="text-sm text-red-200" dangerouslySetInnerHTML={{ __html: t('directPath') }} />
       </motion.div>
     </div>
   );
 }
 
 function InternalFlow() {
+  const { t } = useLanguage();
   return (
     <div className="space-y-8">
       <h2 className="text-2xl text-center text-blue-300 flex items-center justify-center gap-3">
         <Network className="w-7 h-7" />
-        Flux Interne: Traefik Central → Traefik Local 1
+        {t('internalFlowTitle')}
       </h2>
-      
+
       <div className="space-y-6">
         {/* Row 1: User to Central */}
         <div className="flex items-center justify-between">
@@ -164,8 +165,8 @@ function InternalFlow() {
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-2xl">
               <span className="text-3xl">👤</span>
             </div>
-            <p className="text-sm text-white mt-3">Utilisateur</p>
-            <p className="text-xs text-slate-400">LAN / VPN</p>
+            <p className="text-sm text-white mt-3">{t('user')}</p>
+            <p className="text-xs text-slate-400">{t('lanVpn')}</p>
           </motion.div>
 
           <motion.div
@@ -192,8 +193,8 @@ function InternalFlow() {
             <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-2xl border-2 border-blue-400">
               <Network className="w-12 h-12 text-white" />
             </div>
-            <p className="text-sm text-white mt-3">Traefik Central</p>
-            <p className="text-xs text-slate-400">Proxy Interne</p>
+            <p className="text-sm text-white mt-3">{t('centralTraefik')}</p>
+            <p className="text-xs text-slate-400">{t('internalProxy')}</p>
           </motion.div>
         </div>
 
@@ -205,11 +206,11 @@ function InternalFlow() {
           className="flex items-center justify-center gap-4 py-4"
         >
           <motion.div
-            animate={{ 
+            animate={{
               scale: [1, 1.1, 1],
               opacity: [0.7, 1, 0.7]
             }}
-            transition={{ 
+            transition={{
               duration: 2,
               repeat: Infinity,
               delay: 1.2
@@ -219,8 +220,8 @@ function InternalFlow() {
             <span className="text-2xl">🔐</span>
           </motion.div>
           <div className="text-center">
-            <p className="text-sm text-blue-300">↔ Validation d'identité</p>
-            <p className="text-xs text-slate-400">Authentik SSO</p>
+            <p className="text-sm text-blue-300">{t('identityValidation')}</p>
+            <p className="text-xs text-slate-400">{t('ssoAuth')}</p>
           </div>
         </motion.div>
 
@@ -251,7 +252,7 @@ function InternalFlow() {
               <Network className="w-12 h-12 text-white" />
             </div>
             <p className="text-sm text-white mt-3">Traefik Local 1</p>
-            <p className="text-xs text-slate-400">Serveur 1 (Sidecar)</p>
+            <p className="text-xs text-slate-400">{t('server1Sidecar')}</p>
           </motion.div>
         </div>
       </div>
@@ -262,10 +263,7 @@ function InternalFlow() {
         transition={{ delay: 2.5 }}
         className="p-4 bg-blue-950/40 border border-blue-500/50 rounded-xl text-center"
       >
-        <p className="text-sm text-blue-200">
-          🔒 <strong>Chemin Sécurisé:</strong> Tout le trafic interne passe par Traefik Central.<br/>
-          L'authentification via Authentik est obligatoire avant d'accéder aux services.
-        </p>
+        <p className="text-sm text-blue-200" dangerouslySetInnerHTML={{ __html: t('securePath') }} />
       </motion.div>
     </div>
   );
