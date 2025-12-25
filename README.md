@@ -4,8 +4,6 @@
 
 ![Traefik Architecture](https://img.shields.io/badge/Traefik-Architecture-blue?style=for-the-badge&logo=traefik)
 ![GitHub Pages](https://img.shields.io/badge/Deployed%20on-GitHub%20Pages-success?style=for-the-badge&logo=github)
-![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react)
-![Vite](https://img.shields.io/badge/Vite-6.3.5-646CFF?style=for-the-badge&logo=vite)
 
 **Interactive visualization of a Zero Trust Architecture using Traefik**
 
