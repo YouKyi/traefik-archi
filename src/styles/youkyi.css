@@ -1,0 +1,40 @@
+/* youkyi · charte graphique appliquée au site
+   Les fichiers de ./youkyi/ sont des copies conformes du design system de
+   YouKyi-Infra/youkyi-brand (design-system/, --yk-version 2.0.2) : fontes,
+   tokens et couche d'interface `yk-ui.css`. Ne pas les retoucher ici ·
+   toute évolution part de youkyi-brand puis se recopie.
+
+   Ordre des couches : les tokens (variables seules) restent hors couche pour
+   passer devant les variables du gabarit shadcn de theme.css ; le style de
+   base va dans `base`, les classes `.yk-*` dans `components`, si bien que les
+   utilitaires Tailwind gardent la main. */
+
+@import './youkyi/fonts/fonts.css';
+@import './youkyi/tokens/colors.css';
+@import './youkyi/tokens/geometry.css';
+@import './youkyi/tokens/radius.css';
+@import './youkyi/tokens/typography.css';
+@import './youkyi/tokens/spacing.css';
+@import './youkyi/tokens/motion.css';
+@import './youkyi/tokens/dataviz.css';
+@import './youkyi/tokens/glass.css' layer(components);
+@import './youkyi/tokens/base.css' layer(base);
+@import './youkyi/ui/yk-ui.css' layer(components);
+
+/* Les tokens exposés aux utilitaires Tailwind : `bg-yk-surf-2`, `text-yk-ink-3`… */
+@theme inline {
+  --color-yk-bg: var(--yk-bg);
+  --color-yk-panel: var(--yk-panel);
+  --color-yk-slat: var(--yk-slat);
+  --color-yk-surf-1: var(--yk-surf-1);
+  --color-yk-surf-2: var(--yk-surf-2);
+  --color-yk-surf-3: var(--yk-surf-3);
+  --color-yk-ink: var(--yk-ink);
+  --color-yk-ink-2: var(--yk-ink-2);
+  --color-yk-ink-3: var(--yk-ink-3);
+  --color-yk-line: var(--yk-line);
+  --color-yk-accent: var(--yk-accent);
+  --color-yk-accent-txt: var(--yk-accent-txt);
+  --color-yk-ink-solid: var(--yk-ink-solid);
+  --color-yk-on-ink-soft: var(--yk-on-ink-soft);
+}
