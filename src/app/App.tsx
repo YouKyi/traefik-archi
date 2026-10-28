@@ -1,4 +1,4 @@
-import { Cloud, Lock, Shield, Server, Users, User, Activity, Network, ShieldCheck } from 'lucide-react';
+import { Cloud, Lock, Shield, Server, Users, User, Activity, Network, ShieldCheck, ArrowRight } from 'lucide-react';
 import { NetworkNode } from './components/NetworkNode';
 import { ConnectionLine } from './components/ConnectionLine';
 import { FlowVisualizer } from './components/FlowVisualizer';
@@ -10,7 +10,7 @@ import lockup from '../assets/lockup-a-compact.svg?raw';
 
 function Zone({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
-    <section className="ta-zone">
+    <section className="ta-zone flex flex-col">
       <h2 className="ta-label">{icon}{title}</h2>
       {children}
     </section>
@@ -41,38 +41,59 @@ export default function App() {
       </header>
 
       <section className="ta-seuil">
-        <div className="mx-auto max-w-[1180px] px-4 pb-10 pt-14 sm:px-6 sm:pb-14 sm:pt-20">
-          <p className="ta-kicker">Traefik · BunkerWeb · Authentik</p>
-          <h1 className="ta-title">{t('title')}</h1>
-          <p className="ta-lead">{t('subtitle')}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => setActiveFlow('public')}
-              className="yk-btn yk-btn--secondary yk-btn--lg"
-            >
-              <span className="yk-btn__icon"><Shield /></span>
-              {t('visualizePublicFlow')}
-            </button>
-            <button
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => setActiveFlow('internal')}
-              className="yk-btn yk-btn--secondary yk-btn--lg"
-            >
-              <span className="yk-btn__icon"><Lock /></span>
-              {t('visualizeInternalFlow')}
-            </button>
+        <div className="mx-auto grid max-w-[1180px] gap-10 px-4 pb-10 pt-12 sm:px-6 sm:pb-12 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-end">
+          <div>
+            <p className="ta-kicker">Traefik · BunkerWeb · Authentik</p>
+            <h1 className="ta-title">{t('title')}</h1>
+            <p className="ta-lead">{t('subtitle')}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => setActiveFlow('public')}
+                className="yk-btn yk-btn--secondary yk-btn--lg"
+              >
+                <span className="yk-btn__icon"><Shield /></span>
+                {t('visualizePublicFlow')}
+              </button>
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => setActiveFlow('internal')}
+                className="yk-btn yk-btn--secondary yk-btn--lg"
+              >
+                <span className="yk-btn__icon"><Lock /></span>
+                {t('visualizeInternalFlow')}
+              </button>
+            </div>
           </div>
+
+          {/* La légende se lit avant le schéma : la couleur n'est jamais le seul canal */}
+          <aside aria-labelledby="legend-title" className="yk-card">
+            <div className="yk-card__body">
+              <h2 id="legend-title" className="ta-label mb-5 text-yk-ink-3">{t('legend')}</h2>
+              <ul className="m-0 grid list-none gap-5 p-0">
+                {legend.map((item) => (
+                  <li key={item.type} className="grid grid-cols-[48px_minmax(0,1fr)] gap-x-4">
+                    <ConnectionLine type={item.type} orientation="horizontal" length="48px" className="mt-[11px]" />
+                    <div>
+                      <h3 className="ta-legend__title">{item.icon}{item.title}</h3>
+                      <p className="yk-card__text m-0" dangerouslySetInnerHTML={{ __html: item.desc }} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
         </div>
       </section>
 
       <main className="mx-auto max-w-[1180px] space-y-5 px-4 pb-20 sm:px-6">
-        <div className="grid items-start gap-5 lg:grid-cols-2">
-          {/* WAN : le seul tracé orange du schéma, le flux exposé à Internet */}
+        <div className="grid gap-5 lg:grid-cols-2">
+          {/* WAN : le seul tracé orange du schéma, le flux exposé à Internet. Il descend
+              toute la zone jusqu'aux Traefik locaux : il contourne l'infrastructure centrale */}
           <Zone icon={<Cloud />} title={t('wanZone')}>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-1 flex-col items-center">
               <NetworkNode
                 icon={<User />}
                 title={t('publicUser')}
@@ -86,6 +107,13 @@ export default function App() {
                 <NetworkNode icon={<Shield />} title={t('wafEdgeA')} subtitle={t('bunkerWebSiteA')} filter />
                 <NetworkNode icon={<Shield />} title={t('wafEdgeB')} subtitle={t('bunkerWebSiteB')} filter />
               </div>
+              <ConnectionLine type="public" className="min-h-8 flex-1" />
+              <p className="ta-label my-[10px] text-yk-ink-3">{t('bypassCentral')}</p>
+              <ConnectionLine type="public" className="min-h-8 flex-1" />
+              <p className="ta-label mt-[10px] justify-center text-center">
+                {t('publicExit')}
+                <ArrowRight className="hidden lg:block" aria-hidden="true" />
+              </p>
             </div>
             <p className="ta-note" dangerouslySetInnerHTML={{ __html: t('publicFlowInfo') }} />
           </Zone>
@@ -142,22 +170,6 @@ export default function App() {
             <p className="ta-note" dangerouslySetInnerHTML={{ __html: t('internalFlowInfo') }} />
           </Zone>
         </div>
-
-        <section aria-labelledby="legend-title" className="grid gap-5 md:grid-cols-3">
-          <h2 id="legend-title" className="sr-only">{t('legend')}</h2>
-          {legend.map((item) => (
-            <article key={item.type} className="yk-card">
-              <div className="yk-card__body">
-                <ConnectionLine type={item.type} orientation="horizontal" length="48px" className="my-2" />
-                <h3 className="yk-card__title mt-4 flex items-center gap-2 [&>svg]:size-[18px]">
-                  {item.icon}
-                  {item.title}
-                </h3>
-                <p className="yk-card__text m-0" dangerouslySetInnerHTML={{ __html: item.desc }} />
-              </div>
-            </article>
-          ))}
-        </section>
 
         <section className="yk-card yk-card--ink">
           <div className="yk-card__body flex gap-4 sm:px-8 sm:py-7">

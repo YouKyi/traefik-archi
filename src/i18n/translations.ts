@@ -52,6 +52,8 @@ export const translations = {
         showcase: "Showcase",
 
         // Info Boxes
+        bypassCentral: "Bypasses Central Traefik",
+        publicExit: "To Local Traefik 1 · 2, LAN zone",
         publicFlowInfo: "<strong>Public flow:</strong> WAFs filter attacks and route directly to Local Traefik instances",
         internalFlowInfo: "<strong>Internal flow:</strong> goes through Central Traefik + Authentik before reaching services",
 
@@ -133,6 +135,8 @@ export const translations = {
         showcase: "Vitrine",
 
         // Info Boxes
+        bypassCentral: "Contourne le Traefik central",
+        publicExit: "Vers Traefik local 1 · 2, zone LAN",
         publicFlowInfo: "<strong>Flux public :</strong> les WAF filtrent les attaques et routent directement vers les Traefik locaux",
         internalFlowInfo: "<strong>Flux interne :</strong> passe par le Traefik central et Authentik avant d'atteindre les services",
 

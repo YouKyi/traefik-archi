@@ -39,6 +39,13 @@
   }
   .ta-label svg { flex: none; width: 16px; height: 16px; }
 
+  /* ---- légende ---- */
+  .ta-legend__title {
+    display: flex; align-items: center; gap: 8px; margin: 0 0 4px;
+    font: var(--fw-semi) var(--fs-h5)/var(--lh-head) var(--font-head); letter-spacing: var(--ls-h4); color: var(--yk-ink);
+  }
+  .ta-legend__title svg { flex: none; width: 16px; height: 16px; }
+
   /* ---- zone (masse) et étape (masse plus sombre) ---- */
   .ta-zone { border-radius: var(--r-plan); background: var(--yk-surf-2); padding: 20px; }
   .ta-zone > .ta-label { margin-bottom: 20px; font-size: 12px; }
