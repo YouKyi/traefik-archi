@@ -1,19 +1,17 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Check, Globe, Info, Network, RotateCw, Shield, ShieldCheck, Users, X } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { motion } from 'motion/react';
+import { Check, Globe, Info, Network, RotateCw, Shield, ShieldCheck, Users } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { NetworkNode } from './NetworkNode';
 import { ConnectionLine } from './ConnectionLine';
+import { Dialog, EASE, SURFACE } from './Dialog';
 
 interface FlowVisualizerProps {
   activeFlow: 'public' | 'internal' | null;
   onClose: () => void;
 }
 
-// Mouvement youkyi : décélération exponentielle, aucune boucle infinie.
 // Le trajet se joue une fois, le bouton « Rejouer » le relance.
-const EASE = [0.16, 1, 0.3, 1] as const;
-const SURFACE = 0.26;
 const DRAW = 0.5;
 // Les nœuds du trajet sont alignés sur un rail : l'axe passe au centre de leur icône
 const RAIL = 'ml-[34px]';
@@ -48,74 +46,25 @@ function Draw({ at, axis = 'y', className = '', children }: { at: number; axis?:
 
 export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
   const { t } = useLanguage();
-  const closeRef = useRef<HTMLButtonElement>(null);
   const [run, setRun] = useState(0);
 
-  useEffect(() => {
-    if (!activeFlow) return;
-    const previous = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      previous?.focus();
-    };
-  }, [activeFlow, onClose]);
-
   return (
-    <AnimatePresence>
-      {activeFlow && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: SURFACE, ease: EASE }}
-          className="ta-scrim fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
-          onClick={onClose}
-        >
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="flow-title"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: SURFACE, ease: EASE }}
-            className="ta-dialog relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto p-6 sm:p-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <h2 id="flow-title" className="ta-dialog__title">
-                {activeFlow === 'public' ? t('publicFlowTitle') : t('internalFlowTitle')}
-              </h2>
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={onClose}
-                className="yk-btn yk-btn--ghost yk-btn--icon -mr-2 -mt-1"
-                aria-label={t('closeButton')}
-              >
-                <span className="yk-btn__icon"><X /></span>
-              </button>
-            </div>
+    <Dialog
+      open={activeFlow !== null}
+      title={activeFlow === 'public' ? t('publicFlowTitle') : t('internalFlowTitle')}
+      onClose={onClose}
+    >
+      <div key={`${activeFlow}-${run}`}>
+        {activeFlow === 'public' ? <PublicFlow /> : <InternalFlow />}
+      </div>
 
-            <div key={`${activeFlow}-${run}`}>
-              {activeFlow === 'public' ? <PublicFlow /> : <InternalFlow />}
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button type="button" onClick={() => setRun((r) => r + 1)} className="yk-btn yk-btn--ghost yk-btn--sm">
-                <span className="yk-btn__icon"><RotateCw /></span>
-                {t('replay')}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <div className="mt-6 flex justify-end">
+        <button type="button" onClick={() => setRun((r) => r + 1)} className="yk-btn yk-btn--ghost yk-btn--sm">
+          <span className="yk-btn__icon"><RotateCw /></span>
+          {t('replay')}
+        </button>
+      </div>
+    </Dialog>
   );
 }
 
@@ -139,7 +88,7 @@ function PublicFlow() {
       <ol className="m-0 list-none p-0">
         <li>
           <Reveal at={0}>
-            <NetworkNode icon={<Globe />} title={t('internet')} subtitle={t('publicUserLabel')} badge={t('public')} exposed />
+            <NetworkNode icon={<Globe />} title={t('internet')} subtitle={t('publicUserLabel')} />
           </Reveal>
           <Draw at={0.2} className={RAIL}><ConnectionLine type="public" length="36px" /></Draw>
         </li>
@@ -147,7 +96,11 @@ function PublicFlow() {
           <Reveal at={0.7}>
             <NetworkNode icon={<Shield />} title={t('wafEdgeB')} subtitle={t('secureFiltering')} filter />
           </Reveal>
-          <Draw at={0.9} className={RAIL}><ConnectionLine type="public" length="36px" /></Draw>
+          {/* WAF vers Traefik local : TLS, certificat de la PKI interne */}
+          <div className="flex items-center">
+            <Draw at={0.9} className={RAIL}><ConnectionLine type="public" length="40px" /></Draw>
+            <Reveal at={0.9}><p className="ta-label ml-5 text-yk-ink-3">{t('pkiTls')}</p></Reveal>
+          </div>
         </li>
         <li>
           <Reveal at={1.4}>
@@ -167,7 +120,7 @@ function InternalFlow() {
       <ol className="m-0 list-none p-0">
         <li>
           <Reveal at={0}>
-            <NetworkNode icon={<Users />} title={t('user')} subtitle={t('lanVpn')} badge={t('internal')} />
+            <NetworkNode icon={<Users />} title={t('user')} subtitle={t('lanVpn')} />
           </Reveal>
           <Draw at={0.2} className={RAIL}><ConnectionLine type="internal" length="36px" /></Draw>
         </li>
@@ -195,7 +148,11 @@ function InternalFlow() {
               </p>
             </Reveal>
           </div>
-          <Draw at={2.3} className={RAIL}><ConnectionLine type="internal" length="24px" /></Draw>
+          {/* Traefik central vers Traefik local : TLS, certificat de la PKI interne */}
+          <div className="flex items-center">
+            <Draw at={2.3} className={RAIL}><ConnectionLine type="internal" length="40px" /></Draw>
+            <Reveal at={2.3}><p className="ta-label ml-5 text-yk-ink-3">{t('pkiTls')}</p></Reveal>
+          </div>
         </li>
         <li>
           <Reveal at={2.7}>

@@ -20,10 +20,6 @@ export const translations = {
         internalUser: "Internal user",
         lanVpn: "LAN / VPN",
 
-        // Badges
-        public: "Public",
-        internal: "Internal",
-        central: "Central",
 
         // WAF
         wafEdgeA: "WAF Edge A",
@@ -52,17 +48,18 @@ export const translations = {
         showcase: "Showcase",
 
         // Info Boxes
-        bypassCentral: "Bypasses Central Traefik",
-        publicExit: "To Local Traefik 1 · 2, LAN zone",
-        publicFlowInfo: "<strong>Public flow:</strong> WAFs filter attacks and route directly to Local Traefik instances",
-        internalFlowInfo: "<strong>Internal flow:</strong> goes through Central Traefik + Authentik before reaching services",
+        publicFlowInfo: "<strong>Public flow:</strong> a separate entry point. WAFs filter attacks and route directly to Local Traefik instances, over TLS with internal PKI certificates.",
+        clickHint: "Click a node or a link to see its details",
+        toLocalTraefiks: "To the Local Traefik instances",
+        pkiTls: "TLS · internal PKI certificate",
+        internalFlowInfo: "<strong>Internal flow:</strong> goes through Central Traefik + Authentik before reaching services. Between Central Traefik and Local Traefik instances, traffic uses TLS with certificates from the internal PKI (step-ca).",
 
         // Legend
         legend: "Legend",
         publicFlowLegend: "Public flow",
-        publicFlowDesc: "Internet → WAF Edge → Local Traefik<br/><em>Bypasses Central Traefik</em>",
+        publicFlowDesc: "Internet → WAF Edge → Local Traefik<br/><em>Separate entry point, without Central Traefik · TLS with internal PKI certificates</em>",
         internalFlowLegend: "Internal flow",
-        internalFlowDesc: "LAN/VPN → Central Traefik ↔ Authentik → Local Traefik<br/><em>Authentication required</em>",
+        internalFlowDesc: "LAN/VPN → Central Traefik ↔ Authentik → Local Traefik<br/><em>Authentication required · TLS with internal PKI certificates</em>",
         finalFlowLegend: "Final flow",
         finalFlowDesc: "Local Traefik → App Backend<br/><em>Localhost communication only</em>",
 
@@ -79,10 +76,10 @@ export const translations = {
         publicUserLabel: "Public user",
         secureFiltering: "Secure filtering",
         server2Sidecar: "Server 2 (sidecar)",
-        directPath: "<strong>Direct path:</strong> this flow completely bypasses Central Traefik and authentication. WAFs filter attacks and route directly to public services.",
+        directPath: "<strong>Direct path:</strong> a separate entry point. WAFs filter attacks and hand the request straight to the Local Traefik, without going through Central Traefik or Authentik. This hop also uses TLS with an internal PKI certificate.",
         user: "User",
         server1Sidecar: "Server 1 (sidecar)",
-        securePath: "<strong>Secure path:</strong> all internal traffic goes through Central Traefik. Authentication via Authentik is required before accessing services.",
+        securePath: "<strong>Secure path:</strong> all internal traffic goes through Central Traefik. Authentication via Authentik is required before accessing services. Central Traefik then reaches the Local Traefik over TLS, with an internal PKI certificate.",
     },
     fr: {
         // Header
@@ -103,10 +100,6 @@ export const translations = {
         internalUser: "Utilisateur interne",
         lanVpn: "LAN / VPN",
 
-        // Badges
-        public: "Public",
-        internal: "Interne",
-        central: "Central",
 
         // WAF
         wafEdgeA: "WAF Edge A",
@@ -135,17 +128,18 @@ export const translations = {
         showcase: "Vitrine",
 
         // Info Boxes
-        bypassCentral: "Contourne le Traefik central",
-        publicExit: "Vers Traefik local 1 · 2, zone LAN",
-        publicFlowInfo: "<strong>Flux public :</strong> les WAF filtrent les attaques et routent directement vers les Traefik locaux",
-        internalFlowInfo: "<strong>Flux interne :</strong> passe par le Traefik central et Authentik avant d'atteindre les services",
+        publicFlowInfo: "<strong>Flux public :</strong> un point d'entrée distinct. Les WAF filtrent les attaques et routent directement vers les Traefik locaux, en TLS avec des certificats de la PKI interne.",
+        clickHint: "Clique sur un nœud ou une liaison pour voir son détail",
+        toLocalTraefiks: "Vers les Traefik locaux",
+        pkiTls: "TLS · certificat de la PKI interne",
+        internalFlowInfo: "<strong>Flux interne :</strong> passe par le Traefik central et Authentik avant d'atteindre les services. Entre le Traefik central et les Traefik locaux, le trafic est chiffré en TLS avec des certificats de la PKI interne (step-ca).",
 
         // Legend
         legend: "Légende",
         publicFlowLegend: "Flux public",
-        publicFlowDesc: "Internet → WAF Edge → Traefik locaux<br/><em>Contourne le Traefik central</em>",
+        publicFlowDesc: "Internet → WAF Edge → Traefik locaux<br/><em>Point d'entrée distinct, sans Traefik central · TLS, certificats de la PKI interne</em>",
         internalFlowLegend: "Flux interne",
-        internalFlowDesc: "LAN/VPN → Traefik central ↔ Authentik → Traefik locaux<br/><em>Authentification obligatoire</em>",
+        internalFlowDesc: "LAN/VPN → Traefik central ↔ Authentik → Traefik locaux<br/><em>Authentification obligatoire · TLS, certificats de la PKI interne</em>",
         finalFlowLegend: "Flux final",
         finalFlowDesc: "Traefik local → App Backend<br/><em>Communication localhost uniquement</em>",
 
@@ -162,10 +156,10 @@ export const translations = {
         publicUserLabel: "Utilisateur public",
         secureFiltering: "Filtrage sécurisé",
         server2Sidecar: "Serveur 2 (sidecar)",
-        directPath: "<strong>Chemin direct :</strong> ce flux contourne complètement le Traefik central et l'authentification. Les WAF filtrent les attaques et routent directement vers les services publics.",
+        directPath: "<strong>Chemin direct :</strong> un point d'entrée distinct. Les WAF filtrent les attaques et remettent la requête directement au Traefik local, sans passer par le Traefik central ni par Authentik. Ce trajet aussi est en TLS, avec un certificat de la PKI interne.",
         user: "Utilisateur",
         server1Sidecar: "Serveur 1 (sidecar)",
-        securePath: "<strong>Chemin sécurisé :</strong> tout le trafic interne passe par le Traefik central. L'authentification via Authentik est obligatoire avant d'accéder aux services.",
+        securePath: "<strong>Chemin sécurisé :</strong> tout le trafic interne passe par le Traefik central. L'authentification via Authentik est obligatoire avant d'accéder aux services. Le Traefik central joint ensuite le Traefik local en TLS, avec un certificat de la PKI interne.",
     },
 };
 
