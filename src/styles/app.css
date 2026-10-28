@@ -1,0 +1,101 @@
+/* traefik-archi · classes propres au schéma
+   Vocabulaire des schémas techniques youkyi (design-system/preview/schemas.html) :
+   le sol est la page, la zone est une masse, le nœud est un plan posé dessus ;
+   une masse plus sombre marque ce qui étape ; hachures obliques pour la
+   fonction de filtrage ; un seul tracé orange, celui du flux exposé à Internet,
+   avec ses marqueurs carrés. Tokens seulement, aucun hex. */
+
+@layer components {
+  /* ---- chrome · lockup du bandeau (master scellé, inliné pour suivre le thème) ---- */
+  .ta-lockup { display: block; color: var(--yk-ink); --youkyi-accent: var(--yk-accent); }
+  .ta-lockup svg { display: block; height: 24px; width: auto; }
+
+  /* ---- ouverture · seuil du hero : semis à la pente 1/Φ², fondu vers le bas ---- */
+  .ta-seuil { position: relative; isolation: isolate; }
+  .ta-seuil::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image: repeating-linear-gradient(21deg, transparent 0 30px, var(--yk-grid) 30px 31px);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 96%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 96%);
+  }
+  .ta-kicker {
+    margin: 0 0 20px; font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: var(--ls-kicker); text-transform: uppercase; color: var(--yk-accent-txt);
+  }
+  .ta-title {
+    margin: 0; max-width: 22ch; font: var(--fw-semi) clamp(32px, 5vw, var(--fs-display-2))/var(--lh-tight) var(--font-head);
+    letter-spacing: -.01em; color: var(--yk-ink); text-wrap: balance;
+  }
+  .ta-lead {
+    max-width: 58ch; margin: 18px 0 0; font-size: clamp(16px, 2vw, 19px);
+    line-height: var(--lh-body); color: var(--yk-ink-2); text-wrap: pretty;
+  }
+
+  /* ---- étiquette technique · mono en capitales espacées ---- */
+  .ta-label {
+    display: flex; align-items: center; gap: 10px; margin: 0;
+    font: var(--fw-med) var(--fs-mono)/1.3 var(--font-mono);
+    letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--yk-ink-2);
+  }
+  .ta-label svg { flex: none; width: 16px; height: 16px; }
+
+  /* ---- zone (masse) et étape (masse plus sombre) ---- */
+  .ta-zone { border-radius: var(--r-plan); background: var(--yk-surf-2); padding: 20px; }
+  .ta-zone > .ta-label { margin-bottom: 20px; font-size: 12px; }
+  .ta-stage { border: 1px solid var(--yk-line); border-radius: var(--r-card); background: var(--yk-slat); padding: 16px; }
+  .ta-stage > .ta-label { margin-bottom: 14px; color: var(--yk-ink-3); }
+  .ta-host { border: 1px solid var(--yk-line-strong); border-radius: var(--r-card); padding: 12px; }
+  .ta-host__name { margin: 0 0 10px; font: var(--fw-reg) 12px/1.3 var(--font-mono); letter-spacing: var(--ls-mono); color: var(--yk-ink-2); }
+  @media (min-width: 640px) { .ta-zone { padding: 28px; } }
+
+  /* ---- nœud ---- */
+  .ta-node {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; min-width: 0; padding: 12px 14px;
+    border: 1px solid var(--yk-line); border-radius: var(--r-card); background: var(--yk-panel);
+  }
+  .ta-node__icon {
+    display: grid; place-items: center; flex: none; width: 40px; height: 40px;
+    border-radius: var(--r-control); background: var(--yk-surf-2); color: var(--yk-ink);
+  }
+  .ta-node__icon svg { width: 20px; height: 20px; }
+  .ta-node__icon--filter {
+    background-image: repeating-linear-gradient(21deg, transparent 0 5px, var(--yk-line-strong) 5px 6px);
+  }
+  .ta-node__main { display: flex; flex: 1 1 11rem; align-items: center; gap: 12px; min-width: 0; }
+  .ta-node__text { flex: 1; min-width: 0; }
+  /* faute de place, le badge passe sous l'icône et le texte, calé à droite */
+  .ta-node > .yk-badge { margin-left: auto; }
+  .ta-node__title { display: block; font: var(--fw-med) 14.5px/1.3 var(--font-body); color: var(--yk-ink); }
+  .ta-node__sub {
+    display: block; margin-top: 3px; font: var(--fw-reg) 10.5px/1.35 var(--font-mono);
+    letter-spacing: .12em; text-transform: uppercase; color: var(--yk-ink-3);
+  }
+
+  /* ---- liaison · le style du trait dit le flux, la couleur ne le dit jamais seule ----
+     public : trait plein orange + marqueur carré · interne : tirets encre ·
+     auth : tirets neutres · restreint (localhost) : pointillés neutres */
+  .ta-link { position: relative; display: block; flex: none; border: 0 var(--ta-style, solid) var(--ta-c, var(--yk-ink-2)); }
+  .ta-link--public { --ta-c: var(--yk-accent); }
+  .ta-link--internal { --ta-style: dashed; --ta-c: var(--yk-ink-2); }
+  .ta-link--auth { --ta-style: dashed; --ta-c: var(--yk-line-strong); }
+  .ta-link--restricted { --ta-style: dotted; --ta-c: var(--yk-ink-3); }
+  .ta-link--vertical, .ta-link--responsive { width: 0; height: var(--ta-len, 28px); border-left-width: 2px; }
+  .ta-link--horizontal { width: var(--ta-len, 32px); height: 0; border-top-width: 2px; }
+  .ta-link--public::after { content: ""; position: absolute; width: 6px; height: 6px; background: var(--ta-c); }
+  .ta-link--vertical.ta-link--public::after, .ta-link--responsive.ta-link--public::after { left: -4px; bottom: -3px; }
+  .ta-link--horizontal.ta-link--public::after { top: -4px; right: -3px; }
+  @media (min-width: 640px) {
+    .ta-link--responsive { width: var(--ta-len, 32px); height: 0; border-left-width: 0; border-top-width: 2px; }
+    .ta-link--responsive.ta-link--public::after { left: auto; bottom: auto; top: -4px; right: -3px; }
+  }
+
+  /* ---- note sous une zone ---- */
+  .ta-note { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--yk-line); font-size: var(--fs-body-sm); line-height: var(--lh-body); color: var(--yk-ink-2); }
+  .ta-note strong { font-weight: var(--fw-med); color: var(--yk-ink); }
+
+  /* ---- panneau de flux ---- */
+  .ta-scrim { background: color-mix(in srgb, var(--yk-ink-solid) 55%, transparent); }
+  .ta-dialog { background: var(--yk-surf-1); border-radius: var(--r-plan); box-shadow: var(--yk-shadow-2); color: var(--yk-ink); }
+  .ta-dialog__title { margin: 0; font: var(--fw-semi) var(--fs-h2)/var(--lh-head) var(--font-head); letter-spacing: var(--ls-h2); text-wrap: balance; }
+  .ta-dialog .ta-node { background: var(--yk-surf-1); }
+}

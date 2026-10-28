@@ -1,14 +1,70 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, Network, Server, X } from 'lucide-react';
+import { Check, Globe, Info, Network, RotateCw, Shield, ShieldCheck, Users, X } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { NetworkNode } from './NetworkNode';
+import { ConnectionLine } from './ConnectionLine';
 
 interface FlowVisualizerProps {
   activeFlow: 'public' | 'internal' | null;
   onClose: () => void;
 }
 
+// Mouvement youkyi : décélération exponentielle, aucune boucle infinie.
+// Le trajet se joue une fois, le bouton « Rejouer » le relance.
+const EASE = [0.16, 1, 0.3, 1] as const;
+const SURFACE = 0.26;
+const DRAW = 0.5;
+// Les nœuds du trajet sont alignés sur un rail : l'axe passe au centre de leur icône
+const RAIL = 'ml-[34px]';
+
+function Reveal({ at, children }: { at: number; children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: at, duration: SURFACE, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function Draw({ at, axis = 'y', className = '', children }: { at: number; axis?: 'x' | 'y'; className?: string; children: ReactNode }) {
+  const from = axis === 'y' ? { scaleY: 0 } : { scaleX: 0 };
+  const to = axis === 'y' ? { scaleY: 1 } : { scaleX: 1 };
+  return (
+    <motion.span
+      className={`block ${className}`}
+      style={{ originX: 0, originY: 0 }}
+      initial={from}
+      animate={to}
+      transition={{ delay: at, duration: DRAW, ease: EASE }}
+    >
+      {children}
+    </motion.span>
+  );
+}
+
 export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
   const { t } = useLanguage();
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const [run, setRun] = useState(0);
+
+  useEffect(() => {
+    if (!activeFlow) return;
+    const previous = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      previous?.focus();
+    };
+  }, [activeFlow, onClose]);
+
   return (
     <AnimatePresence>
       {activeFlow && (
@@ -16,30 +72,46 @@ export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-8"
+          transition={{ duration: SURFACE, ease: EASE }}
+          className="ta-scrim fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 20 }}
-            className="bg-slate-900 rounded-2xl border-2 border-slate-700 p-8 max-w-4xl w-full relative"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="flow-title"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: SURFACE, ease: EASE }}
+            className="ta-dialog relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto p-6 sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-all group"
-              aria-label={t('closeButton')}
-            >
-              <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-            </button>
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <h2 id="flow-title" className="ta-dialog__title">
+                {activeFlow === 'public' ? t('publicFlowTitle') : t('internalFlowTitle')}
+              </h2>
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={onClose}
+                className="yk-btn yk-btn--ghost yk-btn--icon -mr-2 -mt-1"
+                aria-label={t('closeButton')}
+              >
+                <span className="yk-btn__icon"><X /></span>
+              </button>
+            </div>
 
-            {activeFlow === 'public' ? (
-              <PublicFlow />
-            ) : (
-              <InternalFlow />
-            )}
+            <div key={`${activeFlow}-${run}`}>
+              {activeFlow === 'public' ? <PublicFlow /> : <InternalFlow />}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button type="button" onClick={() => setRun((r) => r + 1)} className="yk-btn yk-btn--ghost yk-btn--sm">
+                <span className="yk-btn__icon"><RotateCw /></span>
+                {t('replay')}
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
@@ -47,224 +119,91 @@ export function FlowVisualizer({ activeFlow, onClose }: FlowVisualizerProps) {
   );
 }
 
+function FlowNote({ at, ok, html }: { at: number; ok?: boolean; html: string }) {
+  return (
+    <Reveal at={at}>
+      <div className="yk-alert mt-6">
+        <span className={`yk-marker ${ok ? 'yk-marker--ok' : 'yk-marker--info'} yk-alert__marker`} aria-hidden="true">
+          {ok ? <Check /> : <Info />}
+        </span>
+        <p className="ta-note m-0 border-0 p-0" dangerouslySetInnerHTML={{ __html: html }} />
+      </div>
+    </Reveal>
+  );
+}
+
 function PublicFlow() {
   const { t } = useLanguage();
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl text-center text-red-300 flex items-center justify-center gap-3">
-        <Shield className="w-7 h-7" />
-        {t('publicFlowTitle')}
-      </h2>
-
-      <div className="flex items-center justify-between">
-        {/* Step 1 */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col items-center"
-        >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-2xl">
-            <span className="text-3xl">🌐</span>
-          </div>
-          <p className="text-sm text-white mt-3">{t('internet')}</p>
-          <p className="text-xs text-slate-400">{t('publicUserLabel')}</p>
-        </motion.div>
-
-        {/* Arrow 1 */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="flex-1 h-1 bg-gradient-to-r from-red-500 to-orange-500 relative mx-4"
-          style={{ originX: 0 }}
-        >
-          <motion.div
-            initial={{ left: 0 }}
-            animate={{ left: 'calc(100% - 12px)' }}
-            transition={{ delay: 0.5, duration: 1.5, repeat: Infinity }}
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg"
-          />
-        </motion.div>
-
-        {/* Step 2 */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex flex-col items-center"
-        >
-          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-2xl border-2 border-red-400">
-            <Shield className="w-12 h-12 text-white" />
-          </div>
-          <p className="text-sm text-white mt-3">WAF Edge B</p>
-          <p className="text-xs text-slate-400">{t('secureFiltering')}</p>
-        </motion.div>
-
-        {/* Arrow 2 */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
-          className="flex-1 h-1 bg-gradient-to-r from-orange-500 to-green-500 relative mx-4"
-          style={{ originX: 0 }}
-        >
-          <motion.div
-            initial={{ left: 0 }}
-            animate={{ left: 'calc(100% - 12px)' }}
-            transition={{ delay: 1.1, duration: 1.5, repeat: Infinity }}
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg"
-          />
-        </motion.div>
-
-        {/* Step 3 */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.4 }}
-          className="flex flex-col items-center"
-        >
-          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center shadow-2xl border-2 border-green-400">
-            <Network className="w-12 h-12 text-white" />
-          </div>
-          <p className="text-sm text-white mt-3">Traefik Local 2</p>
-          <p className="text-xs text-slate-400">{t('server2Sidecar')}</p>
-        </motion.div>
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.8 }}
-        className="p-4 bg-red-950/40 border border-red-500/50 rounded-xl text-center"
-      >
-        <p className="text-sm text-red-200" dangerouslySetInnerHTML={{ __html: t('directPath') }} />
-      </motion.div>
-    </div>
+    <>
+      <ol className="m-0 list-none p-0">
+        <li>
+          <Reveal at={0}>
+            <NetworkNode icon={<Globe />} title={t('internet')} subtitle={t('publicUserLabel')} badge={t('public')} exposed />
+          </Reveal>
+          <Draw at={0.2} className={RAIL}><ConnectionLine type="public" length="36px" /></Draw>
+        </li>
+        <li>
+          <Reveal at={0.7}>
+            <NetworkNode icon={<Shield />} title={t('wafEdgeB')} subtitle={t('secureFiltering')} filter />
+          </Reveal>
+          <Draw at={0.9} className={RAIL}><ConnectionLine type="public" length="36px" /></Draw>
+        </li>
+        <li>
+          <Reveal at={1.4}>
+            <NetworkNode icon={<Network />} title={t('localTraefik2')} subtitle={t('server2Sidecar')} />
+          </Reveal>
+        </li>
+      </ol>
+      <FlowNote at={1.8} html={t('directPath')} />
+    </>
   );
 }
 
 function InternalFlow() {
   const { t } = useLanguage();
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl text-center text-blue-300 flex items-center justify-center gap-3">
-        <Network className="w-7 h-7" />
-        {t('internalFlowTitle')}
-      </h2>
-
-      <div className="space-y-6">
-        {/* Row 1: User to Central */}
-        <div className="flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center"
-          >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-2xl">
-              <span className="text-3xl">👤</span>
+    <>
+      <ol className="m-0 list-none p-0">
+        <li>
+          <Reveal at={0}>
+            <NetworkNode icon={<Users />} title={t('user')} subtitle={t('lanVpn')} badge={t('internal')} />
+          </Reveal>
+          <Draw at={0.2} className={RAIL}><ConnectionLine type="internal" length="36px" /></Draw>
+        </li>
+        <li>
+          <Reveal at={0.7}>
+            <NetworkNode icon={<Network />} title={t('centralTraefik')} subtitle={t('internalProxy')} />
+          </Reveal>
+          {/* Contrôle d'identité : branche latérale, le trajet attend la validation */}
+          <div className="relative py-3 pl-14">
+            <Draw at={1.8} className="absolute bottom-0 left-[34px] top-0">
+              <ConnectionLine type="internal" length="100%" />
+            </Draw>
+            <div className="relative">
+              <Draw at={0.9} axis="x" className="absolute -left-[20px] top-1/2">
+                <ConnectionLine type="auth" orientation="horizontal" length="20px" />
+              </Draw>
+              <Reveal at={1.2}>
+                <NetworkNode icon={<ShieldCheck />} title={t('authentik')} subtitle={t('ssoAuth')} />
+              </Reveal>
             </div>
-            <p className="text-sm text-white mt-3">{t('user')}</p>
-            <p className="text-xs text-slate-400">{t('lanVpn')}</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex-1 h-1 bg-gradient-to-r from-blue-500 to-blue-400 relative mx-4"
-            style={{ originX: 0 }}
-          >
-            <motion.div
-              initial={{ left: 0 }}
-              animate={{ left: 'calc(100% - 12px)' }}
-              transition={{ delay: 0.5, duration: 1.5, repeat: Infinity }}
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8 }}
-            className="flex flex-col items-center"
-          >
-            <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-2xl border-2 border-blue-400">
-              <Network className="w-12 h-12 text-white" />
-            </div>
-            <p className="text-sm text-white mt-3">{t('centralTraefik')}</p>
-            <p className="text-xs text-slate-400">{t('internalProxy')}</p>
-          </motion.div>
-        </div>
-
-        {/* Authentication Check */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.2 }}
-          className="flex items-center justify-center gap-4 py-4"
-        >
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.7, 1, 0.7]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: 1.2
-            }}
-            className="w-16 h-16 rounded-lg bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center border-2 border-gray-400"
-          >
-            <span className="text-2xl">🔐</span>
-          </motion.div>
-          <div className="text-center">
-            <p className="text-sm text-blue-300">{t('identityValidation')}</p>
-            <p className="text-xs text-slate-400">{t('ssoAuth')}</p>
+            <Reveal at={1.5}>
+              <p className="ta-label mt-3">
+                <span className="yk-marker yk-marker--ok yk-marker--sm" aria-hidden="true"><Check /></span>
+                {t('identityValidation')}
+              </p>
+            </Reveal>
           </div>
-        </motion.div>
-
-        {/* Row 2: Central to Local */}
-        <div className="flex items-center justify-center gap-4">
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
-            className="w-48 h-1 bg-gradient-to-r from-blue-400 to-green-500 relative"
-            style={{ originX: 0 }}
-          >
-            <motion.div
-              initial={{ left: 0 }}
-              animate={{ left: 'calc(100% - 12px)' }}
-              transition={{ delay: 1.8, duration: 1.5, repeat: Infinity }}
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 2.1 }}
-            className="flex flex-col items-center"
-          >
-            <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center shadow-2xl border-2 border-green-400">
-              <Network className="w-12 h-12 text-white" />
-            </div>
-            <p className="text-sm text-white mt-3">Traefik Local 1</p>
-            <p className="text-xs text-slate-400">{t('server1Sidecar')}</p>
-          </motion.div>
-        </div>
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.5 }}
-        className="p-4 bg-blue-950/40 border border-blue-500/50 rounded-xl text-center"
-      >
-        <p className="text-sm text-blue-200" dangerouslySetInnerHTML={{ __html: t('securePath') }} />
-      </motion.div>
-    </div>
+          <Draw at={2.3} className={RAIL}><ConnectionLine type="internal" length="24px" /></Draw>
+        </li>
+        <li>
+          <Reveal at={2.7}>
+            <NetworkNode icon={<Network />} title={t('localTraefik1')} subtitle={t('server1Sidecar')} />
+          </Reveal>
+        </li>
+      </ol>
+      <FlowNote at={3} ok html={t('securePath')} />
+    </>
   );
 }

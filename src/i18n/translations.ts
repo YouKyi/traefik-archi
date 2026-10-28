@@ -1,21 +1,23 @@
+// Copy alignée sur la charte youkyi : casse phrase, aucun emoji, séparateur « · ».
+// En français, espace insécable ( ) devant « : » et dans les guillemets.
 export const translations = {
     en: {
         // Header
-        title: "Secure \"Zero Trust\" Network Architecture",
-        subtitle: "Dual Traefik Entry with WAN/LAN Segmentation",
+        title: "Secure \"Zero Trust\" network architecture",
+        subtitle: "Dual Traefik entry with WAN/LAN segmentation",
 
         // Buttons
-        visualizePublicFlow: "Visualize Public Flow (Internet → Local Traefik 2)",
-        visualizeInternalFlow: "Visualize Internal Flow (Central → Local Traefik 1)",
+        visualizePublicFlow: "View the public flow",
+        visualizeInternalFlow: "View the internal flow",
 
         // Zones
-        wanZone: "WAN / INTERNET ZONE",
-        lanZone: "LAN / INTRANET ZONE",
+        wanZone: "WAN / Internet zone",
+        lanZone: "LAN / intranet zone",
 
         // Users
-        publicUser: "Public User",
-        internetAccess: "Internet Access",
-        internalUser: "Internal User",
+        publicUser: "Public user",
+        internetAccess: "Internet access",
+        internalUser: "Internal user",
         lanVpn: "LAN / VPN",
 
         // Badges
@@ -26,21 +28,21 @@ export const translations = {
         // WAF
         wafEdgeA: "WAF Edge A",
         wafEdgeB: "WAF Edge B",
-        bunkerWebSiteA: "BunkerWeb - Site A",
-        bunkerWebSiteB: "BunkerWeb - Site B",
+        bunkerWebSiteA: "BunkerWeb · Site A",
+        bunkerWebSiteB: "BunkerWeb · Site B",
 
         // Infrastructure
-        centralInfrastructure: "Central Infrastructure (Management)",
+        centralInfrastructure: "Central infrastructure (management)",
         centralTraefik: "Central Traefik",
-        internalProxy: "Internal Proxy",
+        internalProxy: "Internal proxy",
         authentik: "Authentik",
         ssoAuth: "SSO / Auth",
-        identityValidation: "↔ Identity Validation",
+        identityValidation: "Identity validation",
 
         // Service Machines
-        serviceMachines: "Service Machines (Nodes)",
-        server1: "🖥️ Server 1 (srv-worker-01)",
-        server2: "🖥️ Server 2 (srv-cloud-01)",
+        serviceMachines: "Service machines (nodes)",
+        server1: "Server 1 (srv-worker-01)",
+        server2: "Server 2 (srv-cloud-01)",
         localTraefik1: "Local Traefik 1",
         localTraefik2: "Local Traefik 2",
         sidecar: "Sidecar",
@@ -50,51 +52,53 @@ export const translations = {
         showcase: "Showcase",
 
         // Info Boxes
-        publicFlowInfo: "🔴 <strong>Public Flow:</strong> WAFs filter attacks and route directly to Local Traefik instances",
-        internalFlowInfo: "🟢 <strong>Internal Flow:</strong> Goes through Central Traefik + Authentik before reaching services",
+        publicFlowInfo: "<strong>Public flow:</strong> WAFs filter attacks and route directly to Local Traefik instances",
+        internalFlowInfo: "<strong>Internal flow:</strong> goes through Central Traefik + Authentik before reaching services",
 
         // Legend
-        publicFlowLegend: "Public Flow (Red/Orange)",
+        legend: "Legend",
+        publicFlowLegend: "Public flow",
         publicFlowDesc: "Internet → WAF Edge → Local Traefik<br/><em>Bypasses Central Traefik</em>",
-        internalFlowLegend: "Internal Flow (Blue/Green)",
+        internalFlowLegend: "Internal flow",
         internalFlowDesc: "LAN/VPN → Central Traefik ↔ Authentik → Local Traefik<br/><em>Authentication required</em>",
-        finalFlowLegend: "Final Flow (Gray/Black)",
+        finalFlowLegend: "Final flow",
         finalFlowDesc: "Local Traefik → App Backend<br/><em>Localhost communication only</em>",
 
         // Zero Trust Principle
-        zeroTrustPrinciple: "🔐 \"Zero Trust\" Principle",
-        zeroTrustDesc: "Backend applications are <strong>NEVER</strong> directly accessible. They are always protected by their Local Traefik (Sidecar pattern).",
+        zeroTrustPrinciple: "\"Zero Trust\" principle",
+        zeroTrustDesc: "Backend applications are <strong>never</strong> directly accessible. They are always protected by their Local Traefik (sidecar pattern).",
 
         // Flow Visualizer
         closeButton: "Close",
-        publicFlowTitle: "Public Flow: Internet → Local Traefik 2",
-        internalFlowTitle: "Internal Flow: Central Traefik → Local Traefik 1",
+        replay: "Replay",
+        publicFlowTitle: "Public flow: Internet → Local Traefik 2",
+        internalFlowTitle: "Internal flow: Central Traefik → Local Traefik 1",
         internet: "Internet",
-        publicUserLabel: "Public User",
-        secureFiltering: "Secure Filtering",
-        server2Sidecar: "Server 2 (Sidecar)",
-        directPath: "⚡ <strong>Direct Path:</strong> This flow completely bypasses Central Traefik and authentication.<br/>WAFs filter attacks and route directly to public services.",
+        publicUserLabel: "Public user",
+        secureFiltering: "Secure filtering",
+        server2Sidecar: "Server 2 (sidecar)",
+        directPath: "<strong>Direct path:</strong> this flow completely bypasses Central Traefik and authentication. WAFs filter attacks and route directly to public services.",
         user: "User",
-        server1Sidecar: "Server 1 (Sidecar)",
-        securePath: "🔒 <strong>Secure Path:</strong> All internal traffic goes through Central Traefik.<br/>Authentication via Authentik is required before accessing services.",
+        server1Sidecar: "Server 1 (sidecar)",
+        securePath: "<strong>Secure path:</strong> all internal traffic goes through Central Traefik. Authentication via Authentik is required before accessing services.",
     },
     fr: {
         // Header
-        title: "Architecture Réseau Sécurisée \"Zero Trust\"",
-        subtitle: "Double Entrée Traefik avec Segmentation WAN/LAN",
+        title: "Architecture réseau sécurisée « Zero Trust »",
+        subtitle: "Double entrée Traefik avec segmentation WAN/LAN",
 
         // Buttons
-        visualizePublicFlow: "Visualiser Flux Public (Internet → Traefik Local 2)",
-        visualizeInternalFlow: "Visualiser Flux Interne (Central → Traefik Local 1)",
+        visualizePublicFlow: "Voir le flux public",
+        visualizeInternalFlow: "Voir le flux interne",
 
         // Zones
-        wanZone: "ZONE WAN / INTERNET",
-        lanZone: "ZONE LAN / INTRANET",
+        wanZone: "Zone WAN / Internet",
+        lanZone: "Zone LAN / intranet",
 
         // Users
-        publicUser: "Utilisateur Public",
+        publicUser: "Utilisateur public",
         internetAccess: "Accès Internet",
-        internalUser: "Utilisateur Interne",
+        internalUser: "Utilisateur interne",
         lanVpn: "LAN / VPN",
 
         // Badges
@@ -105,23 +109,23 @@ export const translations = {
         // WAF
         wafEdgeA: "WAF Edge A",
         wafEdgeB: "WAF Edge B",
-        bunkerWebSiteA: "BunkerWeb - Site A",
-        bunkerWebSiteB: "BunkerWeb - Site B",
+        bunkerWebSiteA: "BunkerWeb · Site A",
+        bunkerWebSiteB: "BunkerWeb · Site B",
 
         // Infrastructure
-        centralInfrastructure: "Infrastructure Centrale (Gestion)",
-        centralTraefik: "Traefik Central",
-        internalProxy: "Proxy Interne",
+        centralInfrastructure: "Infrastructure centrale (gestion)",
+        centralTraefik: "Traefik central",
+        internalProxy: "Proxy interne",
         authentik: "Authentik",
         ssoAuth: "SSO / Auth",
-        identityValidation: "↔ Validation d'identité",
+        identityValidation: "Validation d'identité",
 
         // Service Machines
-        serviceMachines: "Machines de Services (Nodes)",
-        server1: "🖥️ Serveur 1 (srv-worker-01)",
-        server2: "🖥️ Serveur 2 (srv-cloud-01)",
-        localTraefik1: "Traefik Local 1",
-        localTraefik2: "Traefik Local 2",
+        serviceMachines: "Machines de services (nodes)",
+        server1: "Serveur 1 (srv-worker-01)",
+        server2: "Serveur 2 (srv-cloud-01)",
+        localTraefik1: "Traefik local 1",
+        localTraefik2: "Traefik local 2",
         sidecar: "Sidecar",
         appBackend1: "App Backend 1",
         appBackend2: "App Backend 2",
@@ -129,33 +133,35 @@ export const translations = {
         showcase: "Vitrine",
 
         // Info Boxes
-        publicFlowInfo: "🔴 <strong>Flux Public:</strong> Les WAF filtrent les attaques et routent directement vers les Traefik Locaux",
-        internalFlowInfo: "🟢 <strong>Flux Interne:</strong> Passe par Traefik Central + Authentik avant d'atteindre les services",
+        publicFlowInfo: "<strong>Flux public :</strong> les WAF filtrent les attaques et routent directement vers les Traefik locaux",
+        internalFlowInfo: "<strong>Flux interne :</strong> passe par le Traefik central et Authentik avant d'atteindre les services",
 
         // Legend
-        publicFlowLegend: "Flux Public (Rouge/Orange)",
-        publicFlowDesc: "Internet → WAF Edge → Traefik Locaux<br/><em>Contourne le Traefik Central</em>",
-        internalFlowLegend: "Flux Interne (Bleu/Vert)",
-        internalFlowDesc: "LAN/VPN → Traefik Central ↔ Authentik → Traefik Locaux<br/><em>Authentification obligatoire</em>",
-        finalFlowLegend: "Flux Final (Gris/Noir)",
-        finalFlowDesc: "Traefik Local → App Backend<br/><em>Communication localhost uniquement</em>",
+        legend: "Légende",
+        publicFlowLegend: "Flux public",
+        publicFlowDesc: "Internet → WAF Edge → Traefik locaux<br/><em>Contourne le Traefik central</em>",
+        internalFlowLegend: "Flux interne",
+        internalFlowDesc: "LAN/VPN → Traefik central ↔ Authentik → Traefik locaux<br/><em>Authentification obligatoire</em>",
+        finalFlowLegend: "Flux final",
+        finalFlowDesc: "Traefik local → App Backend<br/><em>Communication localhost uniquement</em>",
 
         // Zero Trust Principle
-        zeroTrustPrinciple: "🔐 Principe \"Zero Trust\"",
-        zeroTrustDesc: "Les applications Backend ne sont <strong>JAMAIS</strong> accessibles directement. Elles sont toujours protégées par leur Traefik Local (pattern Sidecar).",
+        zeroTrustPrinciple: "Principe « Zero Trust »",
+        zeroTrustDesc: "Les applications backend ne sont <strong>jamais</strong> accessibles directement. Elles sont toujours protégées par leur Traefik local (pattern sidecar).",
 
         // Flow Visualizer
         closeButton: "Fermer",
-        publicFlowTitle: "Flux Public: Internet → Traefik Local 2",
-        internalFlowTitle: "Flux Interne: Traefik Central → Traefik Local 1",
+        replay: "Rejouer",
+        publicFlowTitle: "Flux public : Internet → Traefik local 2",
+        internalFlowTitle: "Flux interne : Traefik central → Traefik local 1",
         internet: "Internet",
-        publicUserLabel: "Utilisateur Public",
+        publicUserLabel: "Utilisateur public",
         secureFiltering: "Filtrage sécurisé",
-        server2Sidecar: "Serveur 2 (Sidecar)",
-        directPath: "⚡ <strong>Chemin Direct:</strong> Ce flux contourne complètement le Traefik Central et l'authentification.<br/>Les WAF filtrent les attaques et routent directement vers les services publics.",
+        server2Sidecar: "Serveur 2 (sidecar)",
+        directPath: "<strong>Chemin direct :</strong> ce flux contourne complètement le Traefik central et l'authentification. Les WAF filtrent les attaques et routent directement vers les services publics.",
         user: "Utilisateur",
-        server1Sidecar: "Serveur 1 (Sidecar)",
-        securePath: "🔒 <strong>Chemin Sécurisé:</strong> Tout le trafic interne passe par Traefik Central.<br/>L'authentification via Authentik est obligatoire avant d'accéder aux services.",
+        server1Sidecar: "Serveur 1 (sidecar)",
+        securePath: "<strong>Chemin sécurisé :</strong> tout le trafic interne passe par le Traefik central. L'authentification via Authentik est obligatoire avant d'accéder aux services.",
     },
 };
 

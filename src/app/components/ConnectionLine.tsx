@@ -1,34 +1,20 @@
+import type { CSSProperties } from 'react';
+
 interface ConnectionLineProps {
-  label: string;
   type: 'public' | 'internal' | 'auth' | 'restricted';
+  // responsive : vertical sur mobile, horizontal à partir de 640px
+  orientation?: 'vertical' | 'horizontal' | 'responsive';
+  // Longueur du trait (CSS), 28px en vertical et 32px en horizontal par défaut
+  length?: string;
+  className?: string;
 }
 
-const typeStyles = {
-  public: {
-    color: 'bg-red-500',
-    textColor: 'text-red-700'
-  },
-  internal: {
-    color: 'bg-blue-500',
-    textColor: 'text-blue-700'
-  },
-  auth: {
-    color: 'bg-gray-500',
-    textColor: 'text-gray-700'
-  },
-  restricted: {
-    color: 'bg-green-500',
-    textColor: 'text-green-700'
-  }
-};
-
-export function ConnectionLine({ label, type }: ConnectionLineProps) {
-  const styles = typeStyles[type];
-
+export function ConnectionLine({ type, orientation = 'vertical', length, className = '' }: ConnectionLineProps) {
   return (
-    <div className="flex items-center gap-2">
-      <div className={`w-8 h-1 ${styles.color} rounded-full`}></div>
-      <span className={`${styles.textColor}`}>{label}</span>
-    </div>
+    <span
+      aria-hidden="true"
+      className={`ta-link ta-link--${type} ta-link--${orientation} ${className}`}
+      style={length ? ({ '--ta-len': length } as CSSProperties) : undefined}
+    />
   );
 }
