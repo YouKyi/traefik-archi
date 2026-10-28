@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>YouKyi-Infra/ci-infrastructure/renovate-config"
+  ],
+  "packageRules": [
+    {
+      "description": "vite et @vitejs/plugin-react dans la même MR : chaque majeure de l'un exige celle de l'autre en peer dependency, séparées elles échouent en ERESOLVE (MR !28 et !38).",
+      "matchPackageNames": ["vite", "@vitejs/plugin-react"],
+      "groupName": "vite"
+    }
   ]
 }
