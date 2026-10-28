@@ -4,6 +4,7 @@ import { ConnectionLine } from './components/ConnectionLine';
 import { FlowVisualizer } from './components/FlowVisualizer';
 import { DetailPanel } from './components/DetailPanel';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { ThemeToggle } from './components/ThemeToggle';
 import { EASE, SURFACE } from './components/Dialog';
 import { useCallback, useState, type ReactNode } from 'react';
 import { motion, MotionConfig } from 'motion/react';
@@ -72,7 +73,10 @@ export default function App() {
         <div className="yk-nav mx-auto max-w-[1180px] justify-between">
           <span className="yk-nav__sheen" aria-hidden="true" />
           <span className="ta-lockup" dangerouslySetInnerHTML={{ __html: lockup }} />
-          <LanguageSwitcher />
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

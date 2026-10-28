@@ -69,6 +69,8 @@ export const translations = {
 
         // Flow Visualizer
         closeButton: "Close",
+        themeToDark: "Switch to dark theme",
+        themeToLight: "Switch to light theme",
         replay: "Replay",
         publicFlowTitle: "Public flow: Internet → Local Traefik 2",
         internalFlowTitle: "Internal flow: Central Traefik → Local Traefik 1",
@@ -149,6 +151,8 @@ export const translations = {
 
         // Flow Visualizer
         closeButton: "Fermer",
+        themeToDark: "Passer au thème sombre",
+        themeToLight: "Passer au thème clair",
         replay: "Rejouer",
         publicFlowTitle: "Flux public : Internet → Traefik local 2",
         internalFlowTitle: "Flux interne : Traefik central → Traefik local 1",

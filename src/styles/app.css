@@ -5,6 +5,10 @@
    fonction de filtrage ; un seul tracé orange, celui du flux exposé à Internet,
    avec ses marqueurs carrés. Tokens seulement, aucun hex. */
 
+/* barres de défilement et contrôles natifs suivent le thème choisi */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
 @layer components {
   /* ---- chrome · lockup du bandeau (master scellé, inliné pour suivre le thème) ---- */
   .ta-lockup { display: block; color: var(--yk-ink); --youkyi-accent: var(--yk-accent); }
@@ -123,7 +127,7 @@
   .ta-link { position: relative; display: block; flex: none; border: 0 var(--ta-style, solid) var(--ta-c, var(--yk-ink-2)); }
   .ta-link--public { --ta-c: var(--yk-accent); }
   .ta-link--internal { --ta-style: dashed; --ta-c: var(--yk-ink-2); }
-  .ta-link--auth { --ta-style: dashed; --ta-c: var(--yk-line-strong); }
+  .ta-link--auth { --ta-style: dashed; --ta-c: var(--yk-ink-3); } /* 3:1 minimum : un trait est un élément graphique (WCAG 1.4.11) */
   .ta-link--restricted { --ta-style: dotted; --ta-c: var(--yk-ink-3); }
   .ta-link--vertical, .ta-link--responsive { width: 0; height: var(--ta-len, 28px); border-left-width: 2px; }
   .ta-link--horizontal { width: var(--ta-len, 32px); height: 0; border-top-width: 2px; }
