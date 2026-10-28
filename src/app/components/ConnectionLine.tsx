@@ -1,34 +1,34 @@
+import type { CSSProperties } from 'react';
+import { motion } from 'motion/react';
+
 interface ConnectionLineProps {
-  label: string;
   type: 'public' | 'internal' | 'auth' | 'restricted';
+  // responsive : vertical sur mobile, horizontal à partir de 640px
+  orientation?: 'vertical' | 'horizontal' | 'responsive';
+  // Longueur du trait (CSS), 28px en vertical et 32px en horizontal par défaut
+  length?: string;
+  // Délai (s) du tracé : le trait se dessine quand le conteneur parent passe
+  // à l'état « shown » (variantes motion), une seule fois
+  reveal?: number;
+  className?: string;
 }
 
-const typeStyles = {
-  public: {
-    color: 'bg-red-500',
-    textColor: 'text-red-700'
-  },
-  internal: {
-    color: 'bg-blue-500',
-    textColor: 'text-blue-700'
-  },
-  auth: {
-    color: 'bg-gray-500',
-    textColor: 'text-gray-700'
-  },
-  restricted: {
-    color: 'bg-green-500',
-    textColor: 'text-green-700'
-  }
-};
+export function ConnectionLine({ type, orientation = 'vertical', length, reveal, className = '' }: ConnectionLineProps) {
+  const props = {
+    'aria-hidden': true,
+    className: `ta-link ta-link--${type} ta-link--${orientation} ${className}`,
+    style: { transformOrigin: '0 0', ...(length ? { '--ta-len': length } : {}) } as CSSProperties,
+  };
 
-export function ConnectionLine({ label, type }: ConnectionLineProps) {
-  const styles = typeStyles[type];
+  if (reveal === undefined) return <span {...props} />;
 
   return (
-    <div className="flex items-center gap-2">
-      <div className={`w-8 h-1 ${styles.color} rounded-full`}></div>
-      <span className={`${styles.textColor}`}>{label}</span>
-    </div>
+    <motion.span
+      {...props}
+      variants={{
+        hidden: { scale: 0 },
+        shown: { scale: 1, transition: { delay: reveal, duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+      }}
+    />
   );
 }

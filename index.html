@@ -4,7 +4,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Traefik Zero Trust Architecture</title>
+  <meta name="color-scheme" content="light dark" />
+  <title>Secure "Zero Trust" network architecture</title>
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Charte youkyi : clair par défaut, sombre signature. Le choix fait avec le
+       bouton du bandeau (clé « theme ») prime ; sinon le réglage système.
+       Posé avant le rendu pour éviter un flash du mauvais thème. -->
+  <script type="text/javascript">
+    (function () {
+      var m = window.matchMedia('(prefers-color-scheme: dark)');
+      var stored = function () {
+        try { return localStorage.getItem('theme'); } catch (e) { return null; }
+      };
+      var apply = function () {
+        var choice = stored();
+        document.documentElement.dataset.theme =
+          choice === 'dark' || choice === 'light' ? choice : (m.matches ? 'dark' : 'light');
+      };
+      apply();
+      m.addEventListener('change', apply);
+    }())
+  </script>
 
   <!-- Single Page Apps for GitHub Pages -->
   <script type="text/javascript">

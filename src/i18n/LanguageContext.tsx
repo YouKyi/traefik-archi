@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { translations, Language, TranslationKeys } from './translations';
 
@@ -18,6 +18,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const t = (key: TranslationKeys): string => {
         return translations[language][key];
     };
+
+    // Lecteurs d'écran et onglet suivent la langue de la route
+    useEffect(() => {
+        document.documentElement.lang = language;
+        document.title = translations[language].title;
+    }, [language]);
 
     return (
         <LanguageContext.Provider value={{ language, t }}>

@@ -1,0 +1,151 @@
+/* traefik-archi · classes propres au schéma
+   Vocabulaire des schémas techniques youkyi (design-system/preview/schemas.html) :
+   le sol est la page, la zone est une masse, le nœud est un plan posé dessus ;
+   une masse plus sombre marque ce qui étape ; hachures obliques pour la
+   fonction de filtrage ; un seul tracé orange, celui du flux exposé à Internet,
+   avec ses marqueurs carrés. Tokens seulement, aucun hex. */
+
+/* barres de défilement et contrôles natifs suivent le thème choisi */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+@layer components {
+  /* ---- chrome · lockup du bandeau (master scellé, inliné pour suivre le thème) ---- */
+  .ta-lockup { display: block; color: var(--yk-ink); --youkyi-accent: var(--yk-accent); }
+  .ta-lockup svg { display: block; height: 24px; width: auto; }
+
+  /* ---- ouverture · seuil du hero : semis à la pente 1/Φ², fondu vers le bas ---- */
+  .ta-seuil { position: relative; isolation: isolate; }
+  .ta-seuil::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image: repeating-linear-gradient(21deg, transparent 0 30px, var(--yk-grid) 30px 31px);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 96%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 96%);
+  }
+  .ta-kicker {
+    margin: 0 0 14px; font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: var(--ls-kicker); text-transform: uppercase; color: var(--yk-accent-txt);
+  }
+  .ta-title {
+    margin: 0; max-width: 24ch; font: var(--fw-semi) clamp(28px, 4vw, var(--fs-h1))/var(--lh-tight) var(--font-head);
+    letter-spacing: -.01em; color: var(--yk-ink); text-wrap: balance;
+  }
+  .ta-lead {
+    max-width: 58ch; margin: 12px 0 0; font-size: clamp(16px, 1.6vw, 17px);
+    line-height: var(--lh-body); color: var(--yk-ink-2); text-wrap: pretty;
+  }
+
+  /* ---- étiquette technique · mono en capitales espacées ---- */
+  .ta-label {
+    display: flex; align-items: center; gap: 10px; margin: 0;
+    font: var(--fw-med) var(--fs-mono)/1.3 var(--font-mono);
+    letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--yk-ink-2);
+  }
+  .ta-label svg { flex: none; width: 16px; height: 16px; }
+
+  /* ---- légende ---- */
+  .ta-legend__title {
+    display: flex; align-items: center; gap: 8px; margin: 0 0 4px;
+    font: var(--fw-semi) var(--fs-h5)/var(--lh-head) var(--font-head); letter-spacing: var(--ls-h4); color: var(--yk-ink);
+  }
+  .ta-legend__title svg { flex: none; width: 16px; height: 16px; }
+
+  /* ---- zone (masse) et étape (masse plus sombre) ---- */
+  .ta-zone { border-radius: var(--r-plan); background: var(--yk-surf-2); padding: 20px; }
+  .ta-zone > .ta-label { margin-bottom: 20px; font-size: 12px; }
+  .ta-zone > .ta-label + .ta-zone__lead { margin-top: -8px; }
+  .ta-zone__lead { max-width: 60ch; margin: 0 0 22px; font-size: var(--fs-body-sm); line-height: var(--lh-body); color: var(--yk-ink-2); }
+  .ta-zone__lead strong { font-weight: var(--fw-med); color: var(--yk-ink); }
+  .ta-stage { border: 1px solid var(--yk-line); border-radius: var(--r-card); background: var(--yk-slat); padding: 16px; }
+  .ta-stage > .ta-label { margin-bottom: 14px; color: var(--yk-ink-3); }
+  .ta-host { border: 1px solid var(--yk-line-strong); border-radius: var(--r-card); padding: 12px; }
+  .ta-host__name { margin: 0 0 10px; font: var(--fw-reg) 12px/1.3 var(--font-mono); letter-spacing: var(--ls-mono); color: var(--yk-ink-2); }
+  @media (min-width: 640px) { .ta-zone { padding: 28px; } }
+
+  /* ---- nœud ---- */
+  .ta-node {
+    display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 14px;
+    border: 1px solid var(--yk-line); border-radius: var(--r-card); background: var(--yk-panel);
+  }
+  .ta-node__icon {
+    display: grid; place-items: center; flex: none; width: 40px; height: 40px;
+    border-radius: var(--r-control); background: var(--yk-surf-2); color: var(--yk-ink);
+  }
+  .ta-node__icon svg { width: 20px; height: 20px; }
+  .ta-node__icon--filter {
+    background-image: repeating-linear-gradient(21deg, transparent 0 5px, var(--yk-line-strong) 5px 6px);
+  }
+  .ta-node__text { flex: 1; min-width: 0; }
+
+  /* nœud cliquable : la surface monte d'un cran, le titre passe à l'orange
+     texte (carte cliquable uniquement), appui à 97 %, anneau de focus */
+  .ta-node--interactive {
+    width: 100%; font: inherit; color: inherit; text-align: left; cursor: pointer;
+    transition: background var(--dur-state) var(--ease-out), transform var(--dur-press) var(--ease-out);
+  }
+  .ta-node--interactive .ta-node__title { transition: color var(--dur-state) var(--ease-out); }
+  .ta-node__more { flex: none; width: 16px; height: 16px; color: var(--yk-ink-3); }
+  @media (hover: hover) and (pointer: fine) {
+    .ta-node--interactive:hover { background: var(--yk-surf-2); }
+    .ta-node--interactive:hover .ta-node__icon { background: var(--yk-surf-3); }
+    .ta-node--interactive:hover .ta-node__title { color: var(--yk-accent-txt); }
+  }
+  .ta-node--interactive:active { transform: scale(var(--press-scale)); }
+  .ta-node--interactive:focus-visible { outline: 2px solid var(--yk-accent); outline-offset: 2px; }
+
+  /* liaison cliquable : étiquette de sortie de zone */
+  .ta-hop {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 14px;
+    border: 1px solid var(--yk-line); border-radius: var(--r-control); background: var(--yk-panel);
+    font: var(--fw-med) var(--fs-mono)/1.3 var(--font-mono); letter-spacing: var(--ls-label);
+    text-transform: uppercase; color: var(--yk-ink-2); text-align: center; cursor: pointer;
+    transition: background var(--dur-state) var(--ease-out), color var(--dur-state) var(--ease-out), transform var(--dur-press) var(--ease-out);
+  }
+  .ta-hop__detail { color: var(--yk-ink-3); }
+  @media (hover: hover) and (pointer: fine) {
+    .ta-hop:hover { background: var(--yk-surf-2); color: var(--yk-accent-txt); }
+  }
+  .ta-hop:active { transform: scale(var(--press-scale)); }
+  .ta-hop:focus-visible { outline: 2px solid var(--yk-accent); outline-offset: 2px; }
+
+  /* fiche de détail : libellé mono, valeur en corps, identifiants en code */
+  .ta-specs { margin: 0; }
+  .ta-specs__row { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--yk-line); }
+  .ta-specs dt { font: var(--fw-med) var(--fs-mono)/1.3 var(--font-mono); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--yk-ink-3); }
+  .ta-specs dd { margin: 0; font-size: var(--fs-body-sm); line-height: var(--lh-body); color: var(--yk-ink); }
+  .ta-specs code { padding: 1px 5px; border-radius: var(--r-xs); background: var(--yk-surf-2); font-size: .9em; overflow-wrap: anywhere; }
+  @media (min-width: 640px) { .ta-specs__row { grid-template-columns: 150px minmax(0, 1fr); gap: 16px; } }
+  .ta-node__title { display: block; font: var(--fw-med) 14.5px/1.3 var(--font-body); color: var(--yk-ink); }
+  .ta-node__sub {
+    display: block; margin-top: 3px; font: var(--fw-reg) 10.5px/1.35 var(--font-mono);
+    letter-spacing: .08em; text-transform: uppercase; color: var(--yk-ink-3);
+  }
+
+  /* ---- liaison · le style du trait dit le flux, la couleur ne le dit jamais seule ----
+     public : trait plein orange + marqueur carré · interne : tirets encre ·
+     auth : tirets neutres · restreint (localhost) : pointillés neutres */
+  .ta-link { position: relative; display: block; flex: none; border: 0 var(--ta-style, solid) var(--ta-c, var(--yk-ink-2)); }
+  .ta-link--public { --ta-c: var(--yk-accent); }
+  .ta-link--internal { --ta-style: dashed; --ta-c: var(--yk-ink-2); }
+  .ta-link--auth { --ta-style: dashed; --ta-c: var(--yk-ink-3); } /* 3:1 minimum : un trait est un élément graphique (WCAG 1.4.11) */
+  .ta-link--restricted { --ta-style: dotted; --ta-c: var(--yk-ink-3); }
+  .ta-link--vertical, .ta-link--responsive { width: 0; height: var(--ta-len, 28px); border-left-width: 2px; }
+  .ta-link--horizontal { width: var(--ta-len, 32px); height: 0; border-top-width: 2px; }
+  .ta-link--public::after { content: ""; position: absolute; width: 6px; height: 6px; background: var(--ta-c); }
+  .ta-link--vertical.ta-link--public::after, .ta-link--responsive.ta-link--public::after { left: -4px; bottom: -3px; }
+  .ta-link--horizontal.ta-link--public::after { top: -4px; right: -3px; }
+  @media (min-width: 640px) {
+    .ta-link--responsive { width: var(--ta-len, 32px); height: 0; border-left-width: 0; border-top-width: 2px; }
+    .ta-link--responsive.ta-link--public::after { left: auto; bottom: auto; top: -4px; right: -3px; }
+  }
+
+  /* ---- note sous une zone ---- */
+  .ta-note { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--yk-line); font-size: var(--fs-body-sm); line-height: var(--lh-body); color: var(--yk-ink-2); }
+  .ta-note strong { font-weight: var(--fw-med); color: var(--yk-ink); }
+
+  /* ---- panneau de flux ---- */
+  .ta-scrim { background: color-mix(in srgb, var(--yk-ink-solid) 55%, transparent); }
+  .ta-dialog { background: var(--yk-surf-1); border-radius: var(--r-plan); box-shadow: var(--yk-shadow-2); color: var(--yk-ink); }
+  .ta-dialog__title { margin: 0; font: var(--fw-semi) var(--fs-h2)/var(--lh-head) var(--font-head); letter-spacing: var(--ls-h2); text-wrap: balance; }
+  .ta-dialog .ta-node { background: var(--yk-surf-1); }
+}
